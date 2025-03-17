@@ -1,7 +1,13 @@
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { CreateOrganization } from "@clerk/nextjs";
 
 export const EmptyOrg = () => {
@@ -19,6 +25,11 @@ export const EmptyOrg = () => {
           </DialogTrigger>
           <DialogContent className="place-content-center w-[420px] h-[480px] p-0  border-none max-w-[480px]">
             <CreateOrganization />
+            {/* 以下の二つはエラーが出ないようにするため */}
+            <DialogTitle className="sr-only">Title</DialogTitle>
+            <DialogDescription className="sr-only">
+              Description
+            </DialogDescription>
           </DialogContent>
         </Dialog>
       </div>

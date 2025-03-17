@@ -3,7 +3,13 @@
 import { Plus } from "lucide-react";
 import { CreateOrganization } from "@clerk/nextjs";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Hint } from "@/components/hint";
 
 export const NewButton = () => {
@@ -28,6 +34,9 @@ export const NewButton = () => {
       {/* <DialogContent className="p-0 bg-transparent border-none max-w-[480px]"> */}
       <DialogContent className="place-content-center w-[420px] h-[480px] p-0  border-none max-w-[480px]">
         <CreateOrganization />
+        {/* 以下の二つはエラーが出ないようにするため */}
+        <DialogTitle className="sr-only">Title</DialogTitle>
+        <DialogDescription className="sr-only">Description</DialogDescription>
       </DialogContent>
     </Dialog>
   );
