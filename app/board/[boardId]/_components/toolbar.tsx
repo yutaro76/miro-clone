@@ -3,7 +3,7 @@ export const Toolbar = () => {
     // top-[50%]: 縦半分の部分にtopの始まりを持ってくる
     // -translate-y-[50%]: 自身の要素（子・孫のdiv）の高さの半分、要素の始まりを上に移動させる
     // 要素が多くなるほど、始まりが上に移動する
-    <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4 ">
+    <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4">
       <div className="bg-white rounded-md p-1.5 flex gap-y-1 flex-col items-center shadow-md">
         <div>Pencil</div>
         <div>Circle</div>
@@ -13,5 +13,11 @@ export const Toolbar = () => {
         <div>Redo</div>
       </div>
     </div>
+  );
+};
+
+Toolbar.Skeleton = function ToolbarSkeleton() {
+  return (
+    <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4 bg-white h-[360px] w-[52px] shadow-md rounded-md" />
   );
 };
