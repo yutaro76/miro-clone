@@ -1,3 +1,4 @@
+import { log } from "console";
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -53,6 +54,20 @@ export const remove = mutation({
 
     if (!identity) {
       throw new Error("Unauthorized");
+    }
+
+    const userId = identity.subject;
+
+    const existingFavorite = await ctx.db
+      .query("userFavorites")
+      .withIndex("by_user_board", (q) =>
+        q.eq("userId", userId).eq("boardId", args.id)
+      )
+      .unique();
+
+    // existingFavoriteにはboardのidが入り、それに紐づいたuserFavorites内のデータも削除される
+    if (existingFavorite) {
+      await ctx.db.delete(existingFavorite._id);
     }
 
     // 指定されたidのboardを削除する

@@ -12,13 +12,15 @@ import { NewBoardButton } from "./new-board-button";
 interface BoardListProps {
   orgId: string;
   query: {
+    // searchは検索窓、favoritesはお気に入り
+    // 大元のpage.tsxでurlの変化を取り込めるので、その変化をこのファイルにも渡し、ここからuseQueryでapiで処理をする
     search?: string;
     favorites?: string;
   };
 }
 
 export const BoardList = ({ orgId, query }: BoardListProps) => {
-  const data = useQuery(api.boards.get, { orgId }); // eslint-disable-line
+  const data = useQuery(api.boards.get, { orgId, ...query }); // eslint-disable-line
 
   // データを読み込んでいるときにスケルトンが出るようにする
   // <BoardCard.Skeleton />の数だけ出るが、ここでは一つにしている

@@ -6,8 +6,10 @@ import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@clerk/nextjs";
 import { useApiMutation } from "./hooks/use-api-mutation";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const EmptyBoards = () => {
+  const router = useRouter();
   const { organization } = useOrganization();
   // useApiMutationで普通のエンドポイントをパワーアップして状態も持たせられるようにした
   // /convex/board.tsのcreateエンドポイントを使えるようにする
@@ -20,8 +22,9 @@ export const EmptyBoards = () => {
       title: "Untitled",
     })
       // idは新しく作られたboardのid
-      .then(() => {
+      .then((id) => {
         toast.success("Board Created");
+        router.push(`/board/${id}`);
       })
       .catch(() => toast.error("Failed to Create Board"));
   };
