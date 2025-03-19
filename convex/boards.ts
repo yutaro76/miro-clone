@@ -22,6 +22,24 @@ export const get = query({
       // 全ての情報を取得
       .collect();
 
-    return boards;
+    const boardsWithFavoriteRelations = boards.map((board) => {
+      return ctx.db
+        .query("userFavorites")
+        .withIndex("by_user_board", (q) =>
+          q.eq("userId", identity.subject).eq("boardId", board._id)
+        )
+        .unique()
+        .then((favorite) => {
+          return {
+            ...board,
+            // DBのお気に入りに入っているかどうかの状態を逆にする
+            isFavorite: !!favorite,
+          };
+        });
+    });
+
+    const boardsWithFavoriteBoolean = Promise.all(boardsWithFavoriteRelations);
+
+    return boardsWithFavoriteBoolean;
   },
 });

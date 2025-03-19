@@ -74,7 +74,7 @@ export const BoardList = ({ orgId, query }: BoardListProps) => {
             authorName={board.authorName} // eslint-disable-line
             createdAt={board._creationTime} // eslint-disable-line
             orgId={board.orgId} // eslint-disable-line
-            isFavorite={false}
+            isFavorite={board.isFavorite}
           />
         ))}
       </div>
