@@ -2,10 +2,8 @@ import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
 const client = createClient({
-  publicApiKey:
-    "pk_dev_sjW3vcAGVsKxumHN3vGcxfdt9WjD6w4gaEC4o8UJonpqxM1aaVdL-pBZMMPmghl5",
+  authEndpoint: "/api/liveblocks-auth",
 });
-
 // Presence represents the properties that exist on every user in the Room
 // and that will automatically be kept in sync. Accessible through the
 // `user.presence` property. Must be JSON-serializable.
@@ -30,8 +28,12 @@ type Storage = {
 // will not change during a session, like a user's name or avatar.
 // eslint-disable-next-line
 type UserMeta = {
-  // id?: string,  // Accessible through `user.id`
-  // info?: Json,  // Accessible through `user.info`
+  // liveblocks-auth/route.tsのuserInfoに対応している
+  id?: string;
+  info?: {
+    name?: string;
+    picture?: string;
+  };
 };
 
 // Optionally, the type of custom events broadcast and listened to in this
