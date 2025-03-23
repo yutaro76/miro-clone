@@ -9,7 +9,9 @@ const client = createClient({
 // `user.presence` property. Must be JSON-serializable.
 // eslint-disable-next-line
 type Presence = {
-  // cursor: { x: number, y: number } | null,
+  // 16ミリ秒に1回だけ反応
+  throttle: 16;
+  cursor: { x: number; y: number } | null;
   // ...
 };
 

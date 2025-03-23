@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ClientSideSuspense } from "@liveblocks/react";
 
+import { ClientSideSuspense } from "@liveblocks/react";
 import { RoomProvider } from "@/liveblocks.config";
 
 interface RoomProps {
@@ -13,7 +13,8 @@ interface RoomProps {
 
 export const Room = ({ children, roomId, fallback }: RoomProps) => {
   return (
-    <RoomProvider id={roomId} initialPresence={{}}>
+    // cursorはliveblocks.config.ts内で定義されている
+    <RoomProvider id={roomId} initialPresence={{ throttle: 16, cursor: null }}>
       <ClientSideSuspense fallback={fallback}>
         {() => children}
       </ClientSideSuspense>
