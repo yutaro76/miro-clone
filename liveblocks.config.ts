@@ -1,5 +1,11 @@
-import { createClient } from "@liveblocks/client";
+import {
+  createClient,
+  LiveList,
+  LiveMap,
+  LiveObject,
+} from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
+import { Layer, Color } from "@/types/canvas";
 
 const client = createClient({
   authEndpoint: "/api/liveblocks-auth",
@@ -12,6 +18,7 @@ type Presence = {
   // 16ミリ秒に1回だけ反応
   throttle: 16;
   cursor: { x: number; y: number } | null;
+  selection: string[];
   // ...
 };
 
@@ -21,8 +28,8 @@ type Presence = {
 // automatically persisted and synced to all connected clients.
 // eslint-disable-next-line
 type Storage = {
-  // author: LiveObject<{ firstName: string, lastName: string }>,
-  // ...
+  layers: LiveMap<string, LiveObject<Layer>>;
+  layerIds: LiveList<string>;
 };
 
 // Optionally, UserMeta represents static/readonly metadata on each user, as
