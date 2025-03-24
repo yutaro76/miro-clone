@@ -1,7 +1,7 @@
 "use client";
 
 import { nanoid } from "nanoid";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
   useHistory,
@@ -9,6 +9,7 @@ import {
   useCanUndo,
   useMutation,
   useStorage,
+  useOthersMapped,
 } from "@/liveblocks.config";
 import {
   Camera,
@@ -22,7 +23,7 @@ import {
   RectangleLayer,
   TextLayer,
 } from "@/types/canvas";
-import { pointerEventToCanvasPoint } from "@/lib/utils";
+import { connectionIdToColor, pointerEventToCanvasPoint } from "@/lib/utils";
 import { LiveObject } from "@liveblocks/client";
 
 import { Info } from "./info";
@@ -151,6 +152,56 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     [camera, canvasState, history, insertLayer]
   );
 
+  // 他の人がクリックしているものを取得する
+  const onLayerPointerDown = useMutation(
+    ({ self, setMyPresence }, e: React.PointerEvent, layerId: string) => {
+      // 何かを入力しているときはこのメソッドは発火させない
+      if (
+        canvasState.mode === CanvasMode.Pencil ||
+        canvasState.mode === CanvasMode.Inserting
+      ) {
+        return;
+      }
+      // 既存のものを取得するので、履歴を更新する必要はない
+      history.pause();
+      e.stopPropagation();
+
+      // pointerの位置からcanvasの位置を作成する
+      const point = pointerEventToCanvasPoint(e, camera);
+
+      // 自分のlayerに選択されたものがなければ、そのlayerを自分のarrayに追加する
+      if (!self.presence.selection.includes(layerId)) {
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
+      }
+
+      // 選択したら動かすことになるので、Translatingに設定する
+      // currentはcanvas.tsに定義されている
+      setCanvasState({ mode: CanvasMode.Translating, current: point });
+    },
+    []
+  );
+
+  // 他の人が選んでいるものを複数のものを含めて取得する
+  const selections = useOthersMapped((other) => other.presence.selection);
+
+  const layerIdsToColorSelection = useMemo(() => {
+    // Recordはreactで使われる型で、Record<Keys, Type>で使われる
+    // {}は空の初期値
+    const layerIdsToColorSelection: Record<string, string> = {};
+    // selectionsからuserの情報を取り出す
+    for (const user of selections) {
+      // userからconnectionIdとselectionを取り出す
+      const [connectionId, selection] = user;
+      // selectionからlayerIdを取り出す
+      for (const layerId of selection) {
+        // layerIdごとに色をつけて格納する
+        layerIdsToColorSelection[layerId] = connectionIdToColor(connectionId);
+      }
+    }
+
+    return layerIdsToColorSelection;
+  }, [selections]);
+
   return (
     // bg-neutral-100は少し背景を濃くする
     // touch-noneは画面を動かしたりズームしたりできなくする
@@ -180,8 +231,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             <LayerPreview
               key={layerId}
               id={layerId}
-              onLayerPointerDown={() => {}}
-              selectionColor="#000"
+              onLayerPointerDown={onLayerPointerDown}
+              selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
           {/* 動きに関することをこのコンポーネントで管理する */}

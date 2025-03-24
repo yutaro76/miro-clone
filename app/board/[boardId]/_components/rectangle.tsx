@@ -1,3 +1,4 @@
+import { colorToCss } from "@/lib/utils";
 import { RectangleLayer } from "@/types/canvas";
 
 interface RectangleProps {
@@ -18,6 +19,10 @@ export const Rectangle = ({
   return (
     <rect
       className="drop-shadow-md"
+      // 新しく図形が作成されるわけではない
+      // 既存の図形にはすでにidが振られている
+      // eがあるため、クリックされるたびにonPointerDownはtriggerされる
+      // すでにidは図形に入っている（親からpropsとして渡されている）ので、そのidを元にonPointerDownをtriggerする
       onPointerDown={(e) => onPointerDown(e, id)}
       style={{ transform: `translate(${x}px, ${y}px)` }}
       x={0}
@@ -27,9 +32,9 @@ export const Rectangle = ({
       // 枠線の太さ
       strokeWidth={1}
       // 中の塗りつぶしの色
-      fill="#000"
+      fill={fill ? colorToCss(fill) : "#000"}
       // 枠線の色
-      stroke="transparent"
+      stroke={selectionColor || "transparent"}
     />
   );
 };

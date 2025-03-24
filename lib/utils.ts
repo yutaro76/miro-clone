@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-import { Camera } from "@/types/canvas";
+import { Camera, Color } from "@/types/canvas";
 
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
@@ -21,4 +21,11 @@ export function pointerEventToCanvasPoint(
     x: Math.round(e.clientX) - camera.x,
     y: Math.round(e.clientY) - camera.y,
   };
+}
+
+export function colorToCss(color: Color) {
+  // color.rは0から255までの数字で渡され、それをtoString(16)で16進数（ff, a, 0）に変換する
+  // padStart(2, '0'): 二桁までの変換で、必要であれば先頭に0をつける
+  // 最終的に、rgbの数字から、#RRGGBBのようなcssで使われる形に変換される
+  return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
 }
