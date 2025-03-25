@@ -63,7 +63,8 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                // この点からは上または左にのみ動ける
+                onResizeHandlePointerDown(Side.Top + Side.Left, bounds);
               }}
             />
             {/* 真ん中上 */}
@@ -79,7 +80,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Top, bounds);
               }}
             />
             {/* 右上 */}
@@ -95,7 +96,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Top + Side.Right, bounds);
               }}
             />
             {/* 右真ん中 */}
@@ -111,7 +112,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Right, bounds);
               }}
             />
             {/* 右下 */}
@@ -128,7 +129,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Bottom + Side.Right, bounds);
               }}
             />
             {/* 真ん中下 */}
@@ -144,7 +145,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Bottom, bounds);
               }}
             />
             {/* 左下 */}
@@ -160,7 +161,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Bottom + Side.Left, bounds);
               }}
             />
             {/* 左真ん中 */}
@@ -176,7 +177,7 @@ export const SelectionBox = memo(
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                // todo: add resize handler
+                onResizeHandlePointerDown(Side.Left, bounds);
               }}
             />
           </>

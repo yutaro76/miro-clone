@@ -21,9 +21,15 @@ import {
   NoteLayer,
   Point,
   RectangleLayer,
+  Side,
   TextLayer,
+  XYWH,
 } from "@/types/canvas";
-import { connectionIdToColor, pointerEventToCanvasPoint } from "@/lib/utils";
+import {
+  connectionIdToColor,
+  pointerEventToCanvasPoint,
+  resizeBounds,
+} from "@/lib/utils";
 import { LiveObject } from "@liveblocks/client";
 
 import { Info } from "./info";
@@ -108,7 +114,45 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     [lastUsedColor]
   );
 
+  // 選択した図形のリサイズ部分を選択した際に使われる関数
+  const onResizeHandlePointerDown = useCallback(
+    (corner: Side, initialBounds: XYWH) => {
+      history.pause();
+      setCanvasState({
+        mode: CanvasMode.Resizing,
+        initialBounds,
+        corner,
+      });
+    },
+    [history]
+  );
+
   // useCallbackは繰り返し利用されるときに使う
+  const resizeSelectedLayer = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Resizing) {
+        return;
+      }
+
+      const bounds = resizeBounds(
+        canvasState.initialBounds,
+        canvasState.corner,
+        point
+      );
+
+      // layerの一覧を取得
+      const liveLayers = storage.get("layers");
+      // 選んでいるlayerを取得
+      const layer = liveLayers.get(self.presence.selection[0]);
+
+      if (layer) {
+        // 選んだlayerをresizeBoundsでリサイズしたlayerにupdate
+        layer.update(bounds);
+      }
+    },
+    [canvasState]
+  );
+
   // 縦横際限なく動けるようにする
   const onWheel = useCallback((e: React.WheelEvent) => {
     setCamera((camera) => ({
@@ -124,9 +168,13 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
       const current = pointerEventToCanvasPoint(e, camera);
+
+      if (canvasState.mode === CanvasMode.Resizing) {
+        resizeSelectedLayer(current);
+      }
       setMyPresence({ cursor: current });
     },
-    []
+    [camera, canvasState, resizeSelectedLayer]
   );
 
   // カーソルが画面外に出た時に、キャンバス内のポインタが消えるようにする
@@ -238,7 +286,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
-          <SelectionBox onResizeHandlePointerDown={() => {}} />
+          <SelectionBox onResizeHandlePointerDown={onResizeHandlePointerDown} />
           {/* 動きに関することをこのコンポーネントで管理する */}
           <CursorsPresence />
         </g>
