@@ -31,6 +31,7 @@ import { Participants } from "./participants";
 import { Toolbar } from "./toolbar";
 import { CursorsPresence } from "./cursors-presence";
 import { LayerPreview } from "./layer-preview";
+import { SelectionBox } from "./selection-box";
 
 const MAX_LAYERS = 100;
 
@@ -134,8 +135,10 @@ export const Canvas = ({ boardId }: CanvasProps) => {
   }, []);
 
   const onPointerUp = useMutation(
+    // eslint-disable-next-line
     ({}, e) => {
       // どこに描画するかを決める
+      // eslint-disable-next-line
       const point = pointerEventToCanvasPoint(e, camera);
 
       // insertモードであればlayerを追加
@@ -235,6 +238,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
+          <SelectionBox onResizeHandlePointerDown={() => {}} />
           {/* 動きに関することをこのコンポーネントで管理する */}
           <CursorsPresence />
         </g>

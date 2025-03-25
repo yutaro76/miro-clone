@@ -3,7 +3,7 @@
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
-import { useApiMutation } from "./hooks/use-api-mutation";
+import { useApiMutation } from "../../../hooks/use-api-mutation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
