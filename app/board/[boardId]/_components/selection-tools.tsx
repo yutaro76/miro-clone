@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { Trash2 } from "lucide-react";
+import { BringToFront, SendToBack, Trash2 } from "lucide-react";
 
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,60 @@ interface SelectionToolsProps {
 
 export const SelectionTools = memo(
   ({ camera, setLastUsedColor }: SelectionToolsProps) => {
+    // selection: 例 "UAqHOOHcvL3IzuP1fHrKO"
     const selection = useSelf((me) => me.presence.selection);
+
+    const moveToFront = useMutation(
+      ({ storage }) => {
+        const liveLayerIds = storage.get("layerIds");
+        const indices: number[] = [];
+        // arrにlayerのid一覧が入る
+        const arr = liveLayerIds.toArray();
+
+        for (let i = 0; i < arr.length; i++) {
+          // 現状のarrの中で、selectionが何番目かをindicesに入れる
+          if (selection.includes(arr[i])) {
+            indices.push(i);
+          }
+        }
+
+        // indicesに入ったidのlayerを、liveLaterIdsの中で場所を動かす
+        // 配列の最後に来たものが、最前面に表示される
+        // liveLayerIds 変更前（"UAqHOOHcvL3IzuP1fHrKO"が移動する）
+        // [ "UAqHOOHcvL3IzuP1fHrKO", "kibYRg968uq4F_kMn9EtN", "cfqRcqy_9dXpXe9Xg2y92", "rTIX63DuddzXBJDiSQwaq", "gsAflYLaMNCTMCWzU9Vvv"]
+        // liveLayerIds 変更後
+        // [ "kibYRg968uq4F_kMn9EtN", "cfqRcqy_9dXpXe9Xg2y92", "rTIX63DuddzXBJDiSQwaq", "gsAflYLaMNCTMCWzU9Vvv", "UAqHOOHcvL3IzuP1fHrKO" ]
+        for (let i = indices.length - 1; i >= 0; i--) {
+          liveLayerIds.move(
+            indices[i],
+            arr.length - 1 - (indices.length - 1 - i)
+          );
+        }
+      },
+      [selection]
+    );
+
+    const moveToBack = useMutation(
+      ({ storage }) => {
+        const liveLayerIds = storage.get("layerIds");
+        const indices: number[] = [];
+
+        const arr = liveLayerIds.toArray();
+
+        for (let i = 0; i < arr.length; i++) {
+          // 選択しているlayerがlayerの一覧にあれば、indicesにarrの要素番号を追加
+          if (selection.includes(arr[i])) {
+            indices.push(i);
+          }
+        }
+
+        for (let i = 0; i < indices.length; i++) {
+          // 最背面に持ってくるときは、配列の先頭（左側）に移動させる
+          liveLayerIds.move(indices[i], i);
+        }
+      },
+      [selection]
+    );
 
     const setFill = useMutation(
       ({ storage }, fill: Color) => {
@@ -49,7 +102,6 @@ export const SelectionTools = memo(
     // cameraは画面を動かしたときに追従するために使われる
     // 画面自体を動かさない場合はcamera.x = 0
     const x = selectionBounds.width / 2 + selectionBounds.x + camera.x;
-    console.log(selectionBounds.width, selectionBounds.x, camera.x);
     const y = selectionBounds.y + camera.y;
 
     return (
@@ -65,6 +117,18 @@ export const SelectionTools = memo(
         }}
       >
         <ColorPicker onChange={setFill} />
+        <div className="flex flex-col gap-y-0.5">
+          <Hint label="Bring to Front">
+            <Button onClick={moveToFront} variant="board" size="icon">
+              <BringToFront />
+            </Button>
+          </Hint>
+          <Hint label="Send to Back" side="bottom">
+            <Button onClick={moveToBack} variant="board" size="icon">
+              <SendToBack />
+            </Button>
+          </Hint>
+        </div>
         <div className="flex items-center pl-2 ml-2 border-l border-neutral-200">
           <Hint label="Delete">
             <Button variant="board" size="icon" onClick={deleteLayers}>
