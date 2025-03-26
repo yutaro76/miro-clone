@@ -40,7 +40,8 @@ export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
   };
 
   // 左
-  if ((corner && Side.Left) === Side.Left) {
+  // eslint-disable-next-line
+  if ((corner & Side.Left) === Side.Left) {
     // point.x: カーソルが指すx軸
     // bounds.x + bounds.width:元の図形の「右」辺
     // 小さい方（より左側にある方）が新しいxとなる
@@ -50,19 +51,22 @@ export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
   }
 
   // 右
-  if ((corner && Side.Right) === Side.Right) {
+  // eslint-disable-next-line
+  if ((corner & Side.Right) === Side.Right) {
     result.x = Math.min(point.x, bounds.x);
     result.width = Math.abs(point.x - bounds.x);
   }
 
   // 上
-  if ((corner && Side.Top) === Side.Top) {
+  // eslint-disable-next-line
+  if ((corner & Side.Top) === Side.Top) {
     result.y = Math.min(point.y, bounds.y + bounds.height);
     result.height = Math.abs(bounds.y + bounds.height - point.y);
   }
 
   // 下
-  if ((corner && Side.Bottom) === Side.Bottom) {
+  // eslint-disable-next-line
+  if ((corner & Side.Bottom) === Side.Bottom) {
     result.y = Math.min(point.y, bounds.y);
     result.height = Math.abs(point.y - bounds.y);
   }

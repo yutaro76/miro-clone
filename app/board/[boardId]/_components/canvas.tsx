@@ -126,6 +126,45 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     },
     [history]
   );
+  const translateSelectedLayers = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Translating) {
+        return;
+      }
+
+      // 差を埋める距離
+      const offset = {
+        x: point.x - canvasState.current.x,
+        y: point.y - canvasState.current.y,
+      };
+
+      // layerを取得
+      const liveLayers = storage.get("layers");
+
+      for (const id of self.presence.selection) {
+        // layer一覧の中から現在選択しているlayerを選ぶ
+        const layer = liveLayers.get(id);
+
+        // layerの位置をupdate
+        if (layer) {
+          layer.update({
+            x: layer.get("x") + offset.x,
+            y: layer.get("y") + offset.y,
+          });
+        }
+      }
+      setCanvasState({ mode: CanvasMode.Translating, current: point });
+    },
+    [canvasState]
+  );
+
+  const unselectLayers = useMutation(({ self, setMyPresence }) => {
+    // 選択しているlayerがあるとき
+    if (self.presence.selection.length > 0) {
+      // 選択をなくして、進む戻るで追えるようにする
+      setMyPresence({ selection: [] }, { addToHistory: true });
+    }
+  }, []);
 
   // useCallbackは繰り返し利用されるときに使う
   const resizeSelectedLayer = useMutation(
@@ -168,19 +207,36 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
       const current = pointerEventToCanvasPoint(e, camera);
-
-      if (canvasState.mode === CanvasMode.Resizing) {
+      if (canvasState.mode === CanvasMode.Translating) {
+        translateSelectedLayers(current);
+      } else if (canvasState.mode === CanvasMode.Resizing) {
         resizeSelectedLayer(current);
       }
       setMyPresence({ cursor: current });
     },
-    [camera, canvasState, resizeSelectedLayer]
+    [camera, canvasState, translateSelectedLayers, resizeSelectedLayer]
   );
 
   // カーソルが画面外に出た時に、キャンバス内のポインタが消えるようにする
   const onPointerLeave = useMutation(({ setMyPresence }) => {
     setMyPresence({ cursor: null });
   }, []);
+
+  // クリックして押下している状態の挙動
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      const point = pointerEventToCanvasPoint(e, camera);
+
+      if (canvasState.mode === CanvasMode.Inserting) {
+        return;
+      }
+
+      // todo: drawing
+
+      setCanvasState({ origin: point, mode: CanvasMode.Pressing });
+    },
+    [camera, canvasState.mode, setCanvasState]
+  );
 
   const onPointerUp = useMutation(
     // eslint-disable-next-line
@@ -189,8 +245,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
       // eslint-disable-next-line
       const point = pointerEventToCanvasPoint(e, camera);
 
-      // insertモードであればlayerを追加
-      if (canvasState.mode === CanvasMode.Inserting) {
+      if (
+        canvasState.mode === CanvasMode.None ||
+        canvasState.mode === CanvasMode.Pressing
+      ) {
+        unselectLayers();
+        setCanvasState({ mode: CanvasMode.None });
+      } else if (canvasState.mode === CanvasMode.Inserting) {
+        // insertモードであればlayerを追加
         insertLayer(canvasState.layerType, point);
       } else {
         setCanvasState({
@@ -200,7 +262,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
       // 追加中には一時的にhistoryへの追加が止まっていたものを、historyへの追加を再開する
       history.resume();
     },
-    [camera, canvasState, history, insertLayer]
+    [camera, canvasState, history, insertLayer, unselectLayers]
   );
 
   // 他の人がクリックしているものを取得する
@@ -273,6 +335,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         onWheel={onWheel}
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
+        onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
         {/* transformは移動や変形を管理し、今回はtranslateと共に移動の装飾をする */}
