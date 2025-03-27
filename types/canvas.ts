@@ -49,7 +49,7 @@ export type RectangleLayer = {
 };
 
 export type EllipseLayer = {
-  type: LayerType.Rectangle;
+  type: LayerType.Ellipse;
   x: number;
   y: number;
   height: number;
