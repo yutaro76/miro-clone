@@ -27,7 +27,7 @@ export const SelectionTools = memo(
         const liveLayerIds = storage.get("layerIds");
         const indices: number[] = [];
         // arrにlayerのid一覧が入る
-        const arr = liveLayerIds.toArray();
+        const arr = liveLayerIds.toImmutable();
 
         for (let i = 0; i < arr.length; i++) {
           // 現状のarrの中で、selectionが何番目かをindicesに入れる
@@ -57,7 +57,7 @@ export const SelectionTools = memo(
         const liveLayerIds = storage.get("layerIds");
         const indices: number[] = [];
 
-        const arr = liveLayerIds.toArray();
+        const arr = liveLayerIds.toImmutable();
 
         for (let i = 0; i < arr.length; i++) {
           // 選択しているlayerがlayerの一覧にあれば、indicesにarrの要素番号を追加

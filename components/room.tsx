@@ -18,7 +18,13 @@ export const Room = ({ children, roomId, fallback }: RoomProps) => {
     // cursorはliveblocks.config.ts内で定義されている
     <RoomProvider
       id={roomId}
-      initialPresence={{ throttle: 16, cursor: null, selection: [] }}
+      initialPresence={{
+        throttle: 16,
+        cursor: null,
+        selection: [],
+        pencilDraft: null,
+        penColor: null,
+      }}
       initialStorage={{
         layers: new LiveMap<string, LiveObject<Layer>>(),
         layerIds: new LiveList<string>([]),

@@ -19,6 +19,14 @@ type Presence = {
   throttle: 16;
   cursor: { x: number; y: number } | null;
   selection: string[];
+  // 二重の配列になる
+  // 例
+  // const pencilDraft: [number, number, number][] = [
+  //   [10, 20, 0.5],
+  //   [15, 25, 0.6],
+  // ];
+  pencilDraft: [x: number, y: number, pressure: number][] | null;
+  penColor: Color | null;
   // ...
 };
 
