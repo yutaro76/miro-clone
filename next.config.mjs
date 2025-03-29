@@ -11,6 +11,10 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.cache = false; // eslint-disable-line
+    return config; // eslint-disable-line
+  },
 };
 
 export default nextConfig;
