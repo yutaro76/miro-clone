@@ -11,8 +11,10 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config) => {
-    config.cache = false; // eslint-disable-line
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.innerGraph = false; // eslint-disable-line
+    }
     return config; // eslint-disable-line
   },
 };
