@@ -8,6 +8,10 @@ export default clerkMiddleware(async (auth, request) => {
   }
 });
 
+clerkMiddleware({
+  authorizedParties: ["https://miro.okudayutaro.com"],
+});
+
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
