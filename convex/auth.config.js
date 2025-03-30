@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: "https://equal-fish-24.clerk.accounts.dev",
+      domain: process.env.CLERK_DOMAIN,
       applicationID: "convex",
     },
   ],
