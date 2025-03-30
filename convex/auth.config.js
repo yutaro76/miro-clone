@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: process.env.CLERK_DOMAIN,
+      domain: "https://clerk.miro.okudayutaro.com",
       applicationID: "convex",
     },
   ],
