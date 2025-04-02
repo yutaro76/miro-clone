@@ -19,14 +19,17 @@ export const ConvexClientProvider = ({
 }: ConvexClientProviderProps) => {
   return (
     <ClerkProvider>
-      <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
-        {/* ログインできた状態でのみページが表示される */}
-        <Authenticated>{children}</Authenticated>
-        {/* ローディング中はローディングを表示させる */}
-        <AuthLoading>
-          <Loading />
-        </AuthLoading>
-      </ConvexProviderWithClerk>
+      {
+        // eslint-disable-next-line
+        <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
+          {/* ログインできた状態でのみページが表示される */}
+          <Authenticated>{children}</Authenticated>
+          {/* ローディング中はローディングを表示させる */}
+          <AuthLoading>
+            <Loading />
+          </AuthLoading>
+        </ConvexProviderWithClerk>
+      }
     </ClerkProvider>
   );
 };

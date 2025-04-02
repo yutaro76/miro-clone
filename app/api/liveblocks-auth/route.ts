@@ -11,7 +11,7 @@ const liveblocks = new Liveblocks({
 });
 
 export async function POST(request: Request) {
-  const authorization = await auth();
+  const authorization = await auth(); // eslint-disable-line
   const user = await currentUser();
 
   if (!authorization || !user) {
